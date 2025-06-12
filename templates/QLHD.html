@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Đơn Hàng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding-top: 50px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .tinh-trang {
+    font-size: 18px; /* Tăng kích thước chữ */
+    font-weight: bold; /* Làm đậm chữ */
+}
+
+.btn-custom {
+    min-width: 120px; /* Đảm bảo chiều rộng tối thiểu cho nút */
+    margin: 5px; /* Khoảng cách giữa các nút */
+}
+
+.btn-info {
+    background-color: #007bff; /* Màu xanh dương cho nút "Xem Chi Tiết" */
+    border-color: #007bff; /* Đường vi màu xanh dương */
+}
+
+.btn-success {
+    background-color: #28a745; /* Màu xanh lá cho nút "Cập nhật" */
+    border-color: #28a745; /* Đường vi màu xanh lá */
+}
+
+.badge.bg-warning {
+    background-color: #ffc107; /* Màu vàng cho "Chờ Thanh Toán" */
+}
+
+.badge.bg-success {
+    background-color: #5cb85c; /* Màu xanh lá đậm cho "Đã Thanh Toán" */
+}
+        
+        #hoaDonDetails {
+        display: none;
+        position: fixed;
+        top: 63%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border: 1px solid #ccc;
+        z-index: 1000;
+        font-size: 12px; /* Thay đổi kích thước chữ ở đây */
+    }
+    #hoaDonDetails h4 {
+        font-size: 14px; /* Kích thước chữ tiêu đề */
+    }
+        .buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            color: white;
+        }
+        .buttons button:nth-child(1) {
+            background-color: #28a745;
+        }
+        .buttons button:nth-child(2) {
+            background-color: #ffc107;
+        }
+        .buttons button:nth-child(3) {
+            background-color: #dc3545;
+        }
+        .search-box {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-box input {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .search-box button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 4px;
+        }
+        .customer-list {
+            margin-top: 20px;
+        }
+        .customer-list table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .customer-list th, .customer-list td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            background-color: white;
+        }
+        .customer-list th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .confirmation-dialog {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            text-align: center;
+            width: 400px;
+            border-radius: 8px;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .dialog-buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .dialog-buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            color: black
+        }
+        .dialog-buttons .btn-danger {
+            background-color: #7f6df5;
+        }
+        .dialog-buttons .btn-primary {
+            background-color: #0a0aa4;
+        }
+    </style>
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    <script>
+        // Hiển thị form Thêm Hóa Đơn
+        function showAddHoaDonForm() {
+            document.getElementById('addHoaDonForm').style.display = 'block';
+        }
+    
+        // Ẩn form Thêm Hóa Đơn
+        function hideAddHoaDonForm() {
+            document.getElementById('addHoaDonForm').style.display = 'none';
+        }
+    
+        // Hiển thị form Cập Nhật Hóa Đơn
+        function showEditHoaDonForm(hoaDonId) {
+            const row = document.getElementById(hoaDonId);
+    
+            // Kiểm tra nếu dòng (row) tồn tại, tránh lỗi nếu không có dữ liệu
+            if (row) {
+                document.getElementById('editHoaDonForm').style.display = 'block';
+    
+                // Lấy thông tin từ dòng và điền vào form
+                document.getElementById('editMaHD').value = row.cells[0].innerText;
+                document.getElementById('editHoTenKH').value = row.cells[1].innerText;
+                document.getElementById('editDiaDiemGH').value = row.cells[2].innerText;
+                document.getElementById('editSDTNguoiDH').value = row.cells[3].innerText;
+                document.getElementById('editNgayDH').value = row.cells[4].innerText;
+                document.getElementById('editPhuongThucThanhToan').value = row.cells[5].innerText;
+                document.getElementById('editTinhTrangDDH').value = row.cells[6].innerText;
+                document.getElementById('editTongTien').value = row.cells[7].innerText;
+            }
+        }
+    
+        // Ẩn form Cập Nhật Hóa Đơn
+        function hideEditHoaDonForm() {
+            document.getElementById('editHoaDonForm').style.display = 'none';
+        }
+    
+        // Tìm kiếm hóa đơn
+        function searchHoaDon() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#hoaDonTable tbody tr');
+    
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const match = Array.from(cells).some(cell => cell.innerText.toLowerCase().includes(input));
+                row.style.display = match ? '' : 'none';
+            });
+        }
+    
+        // Hiển thị hộp thoại xác nhận xóa hóa đơn
+        function showConfirmationDialog(maHD) {
+            // Sử dụng confirm() để hiện hộp thoại xác nhận
+            const confirmed = confirm('Bạn có chắc chắn muốn xóa hóa đơn này?');
+    
+            // Nếu người dùng xác nhận, thực hiện xóa
+            if (confirmed) {
+                window.location.href = `/delete_hoadon/${maHD}`;  // Chuyển hướng đến URL xóa hóa đơn
+            }
+        }
+    
+        // Cập nhật hóa đơn
+        function updateHoaDon() {
+            const maHD = document.getElementById('editMaHD').value;
+            const hoTenKH = document.getElementById('editHoTenKH').value;
+            const diaDiemGH = document.getElementById('editDiaDiemGH').value;
+            const sdtNguoiDH = document.getElementById('editSDTNguoiDH').value;
+            const ngayDH = document.getElementById('editNgayDH').value;
+            const phuongThucThanhToan = document.getElementById('editPhuongThucThanhToan').value;
+            const tinhTrangDDH = document.getElementById('editTinhTrangDDH').value;
+            const tongTien = document.getElementById('editTongTien').value;
+    
+            // Gọi API để cập nhật hóa đơn
+            fetch(`/api/update_hoadon/${maHD}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    HoTenKH: hoTenKH,
+                    DiaDiemGH: diaDiemGH,
+                    SDTNguoiDH: sdtNguoiDH,
+                    NgayDH: ngayDH,
+                    PhuongThucThanhToan: phuongThucThanhToan,
+                    TinhTrangDDH: tinhTrangDDH,
+                    TongTien: tongTien,
+                }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Cập nhật hóa đơn thành công!');
+                    location.reload();  // Tải lại trang để cập nhật danh sách
+                } else {
+                    alert('Lỗi khi cập nhật hóa đơn.');
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi gọi API:', error);
+                alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            });
+        }
+    </script>
+    
+    
+</head>
+<body>
+
+   
+
+    <!-- Navbar start -->
+    <div class="container-fluid fixed-top">
+        <div class="container topbar bg-primary d-none d-lg-block">
+            <div class="d-flex justify-content-between">
+                <div class="top-info ps-2">
+                    <small class="me-3"><i class="fas fa-map-marker-alt me-2 text-secondary"></i> <a href="#" class="text-white">Lầu 4A, Toà nhà Vincom, 72 Lê Thánh Tôn, Phường Bến Nghé, Quận 1, Tp. Hồ Chí Minh, Việt Nam.</a></small>
+                    <small class="me-3"><i class="fas fa-envelope me-2 text-secondary"></i><a href="#" class="text-white">cs_vn@innisfree.com</a></small>
+                </div>
+            </div>
+        </div>
+   
+        <div class="container px-0">
+            <nav class="navbar navbar-light bg-white navbar-expand-xl">
+                <a href="index.html" class="navbar-brand">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Innisfree-logo.svg/240px-Innisfree-logo.svg.png" style="width: 40%;">
+                </a>
+                <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars text-primary"></span>
+                </button>
+                <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
+                    <div class="navbar-nav mx-auto">
+                        <a href="TrangChu.html" class="nav-item nav-link ">Trang chủ</a>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"> Quản lý thông tin </a>
+                            <div class="dropdown-menu m-0 bg-secondary rounded-0">
+                                <a  href="{{ url_for('customers') }}" class="dropdown-item active">Quản lý khách hàng</a>
+                                <a href="{{ url_for('employees') }}" class="dropdown-item">Quản lý nhân viên</a>
+                                <a href="{{ url_for('sanpham') }}"  class="dropdown-item">Quản lý sản phẩm </a>
+                                <a href="{{ url_for('products') }}" class="dropdown-item">Quản lý loại sản phẩm</a>
+                                <a href="{{ url_for('taikhoan') }}" class="dropdown-item">Quản lý tài khoản</a>
+                            </div>
+                        </div>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Bán hàng </a>
+                            <div class="dropdown-menu m-1 bg-secondary rounded-1">
+                                <a href="{{ url_for('hoadon') }}" class="dropdown-item active">Đơn đặt hàng</a>
+                                <a href="{{ url_for('warehouses') }}" class="dropdown-item">Kho</a>
+                                <a href="{{ url_for('phieunhap') }}" class="dropdown-item">Phiếu nhập</a>
+                                <a href="{{ url_for('phieuxuat') }}" class="dropdown-item">Phiếu Xuất</a>
+                            </div> 
+                        </div>
+                        <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Báo cáo - Thống kê</a>
+                        <div class="dropdown-menu m-2 bg-secondary rounded-2">
+                            <a href="{{ url_for('tonkho') }}" class="dropdown-item active">Doanh thu</a>
+                            <a href="{{ url_for('tk') }}" class="dropdown-item">Tồn kho</a>
+                        </div> 
+                        </div>
+                    </div>
+                  
+                </div>
+            </nav>
+        </div>
+    </div>
+    <!-- Navbar End -->
+    <h1>""</h1>
+    <h1>""</h1>
+    <div class="container mt-5">
+        <h1>Quản Lý Đơn Hàng</h1>
+
+      
+        <!-- Form Thêm Hóa Đơn -->
+        <div id="addHoaDonForm" style="display:none;">
+            <form method="POST" action="{{ url_for('add_hoadon') }}">
+                <div class="form-group">
+                    <label for="maHD">Mã Đơn Hàng:</label>
+                    <input type="text" class="form-control" id="maHD" name="MaHD" required>
+                </div>
+                <div class="form-group">
+                    <label for="hoTenKH">Họ Tên Khách Hàng:</label>
+                    <input type="text" class="form-control" id="hoTenKH" name="HoTenKH" required>
+                </div>
+                <div class="form-group">
+                    <label for="diaDiemGH">Địa Chỉ Giao Hàng:</label>
+                    <input type="text" class="form-control" id="diaDiemGH" name="DiaDiemGH" required>
+                </div>
+                <div class="form-group">
+                    <label for="sdtNguoiDH">Số Điện Thoại:</label>
+                    <input type="text" class="form-control" id="sdtNguoiDH" name="SDTNguoiDH" required>
+                </div>
+                <div class="form-group">
+                    <label for="ngayDH">Ngày Tạo:</label>
+                    <input type="date" class="form-control" id="ngayDH" name="NgayDH" required>
+                </div>
+                <div class="form-group">
+                    <label for="phuongThucThanhToan">Phương Thức Thanh Toán:</label>
+                    <select class="form-control" id="phuongThucThanhToan" name="PhuongThucThanhToan" required>
+                        <option value="COD">COD</option>
+                        <option value="Ngân hàng">Ngân hàng</option>
+                        <option value="Ví điện tử">Ví điện tử</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tinhTrangDDH">Tình Trạng Đơn Hàng:</label>
+                    <select class="form-control" id="tinhTrangDDH" name="TinhTrangDDH" required>
+                        <option value="Chờ Thanh Toán">Chờ Thanh Toán</option>
+                        <option value="Đã Thanh Toán">Đã Thanh Toán</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tongTien">Tổng Tiền:</label>
+                    <input type="number" class="form-control" id="tongTien" name="TongTien" required>
+                </div>
+                <div class="buttons">
+                    <button type="submit" class="btn btn-success">Thêm</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideAddHoaDonForm()">Hủy</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Danh Sách Hóa Đơn -->
+        <h2 class="mt-5">Danh Sách Đơn Hàng</h2>
+        <input type="text" class="form-control mb-3" id="searchInput" onkeyup="searchHoaDon()" placeholder="Tìm kiếm đơn hàng...">
+        
+        <table id="hoaDonTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Mã Đơn Hàng</th>
+                    <th>Họ Tên Khách Hàng</th>
+                    <th>Địa Chỉ Giao Hàng</th>
+                    <th>Số Điện Thoại</th>
+                    <th>Ngày Tạo</th>
+                    <th>Phương Thức Thanh Toán</th>
+                    <th>Tình Trạng Đơn Hàng</th>
+                    <th>Tổng Tiền</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hoa_don in hoa_don_list %}
+                <tr id="{{ hoa_don.MaHD }}">
+                    <td>{{ hoa_don.MaHD }}</td>
+                    <td>{{ hoa_don.HoTenKH }}</td>
+                    <td>{{ hoa_don.DiaDiemGH }}</td>
+                    <td>{{ hoa_don.SDTNguoiDH }}</td>
+                    <td>{{ hoa_don.NgayDH }}</td>
+                    <td>{{ hoa_don.PhuongThucThanhToan }}</td>
+                    <td>
+                        <span class="badge tinh-trang {% if hoa_don.TinhTrangDDH == 'Chờ Thanh Toán' %}bg-warning{% else %}bg-success{% endif %}">
+                            {{ hoa_don.TinhTrangDDH }}
+                        </span>
+                    </td>
+                    <td>{{ hoa_don.TongTien }}</td>
+                    <td>
+                        <button class="btn btn-info btn-custom" onclick="showHoaDonDetails('{{ hoa_don.MaHD }}')">Xem Chi Tiết</button>
+                        <button class="btn btn-success btn-custom" onclick="toggleTinhTrang('{{ hoa_don.MaHD }}')">Cập nhật</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Chi Tiết Hóa Đơn -->
+        <div id="hoaDonDetails" >
+            <h3 style="font-size: 20px;">Chi Tiết Đơn Hàng</h3>
+            <p><strong>Mã Hóa Đơn:</strong> <span id="detailMaHD"></span></p>
+            <p><strong>Họ Tên Khách Hàng:</strong> <span id="detailHoTenKH"></span></p>
+            <p><strong>Địa Chỉ Giao Hàng:</strong> <span id="detailDiaChi"></span></p>
+            <p><strong>Số Điện Thoại:</strong> <span id="detailSDT"></span></p>
+            <p><strong>Ngày Tạo:</strong> <span id="detailNgayDH"></span></p>
+            <p><strong>Tình Trạng Đơn Hàng:</strong> <span id="detailTinhTrangDDH"></span></p>
+            <p><strong>Tổng Tiền:</strong> <span id="detailTongTien"></span></p>
+        
+            <h4>Danh Sách Sản Phẩm</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tên Sản Phẩm</th>
+            <th>Số Lượng Đặt</th>
+            <th>Đơn Giá</th>
+        </tr>
+    </thead>
+    <tbody id="chiTietSanPham"></tbody>
+</table>
+            
+            <div class="buttons">
+                <button class="btn btn-secondary" onclick="hideHoaDonDetails()">Đóng</button>
+                <button class="btn btn-warning" onclick="printHoaDon()">In Hóa Đơn</button>
+            </div>
+        </div>
+        
+        <script>
+        function showAddHoaDonForm() {
+            document.getElementById('addHoaDonForm').style.display = 'block';
+        }
+        
+        function hideAddHoaDonForm() {
+            document.getElementById('addHoaDonForm').style.display = 'none';
+        }
+        
+        function showHoaDonDetails(maHD) {
+    const row = document.getElementById(maHD);
+    document.getElementById('detailMaHD').innerText = maHD;
+    document.getElementById('detailHoTenKH').innerText = row.cells[1].innerText;
+    document.getElementById('detailDiaChi').innerText = row.cells[2].innerText;
+    document.getElementById('detailSDT').innerText = row.cells[3].innerText;
+    document.getElementById('detailNgayDH').innerText = row.cells[4].innerText;
+    document.getElementById('detailTinhTrangDDH').innerText = row.cells[6].innerText;
+    document.getElementById('detailTongTien').innerText = row.cells[7].innerText;
+
+    // Dữ liệu tĩnh cho các hóa đơn
+    let products = [];
+    switch (maHD) {
+        case 'HD001':
+            products = [
+                { tenSanPham: 'Kem Chống Nắng Innisfree Tone Up No Sebum SPF50+/PA++++', soLuong: 2, donGia: 300000 },
+                { tenSanPham: 'Sữa rửa mặt Innisfree Green Tea Foam Cleanser', soLuong: 1, donGia: 200000 }
+            ];
+            break;
+        case 'HD002':
+            products = [
+                { tenSanPham: 'Kem Chống Nắng Innisfree Highlight No Sebum SPF50+/PA++++', soLuong: 2, donGia: 450000 },
+                { tenSanPham: 'Kem Dưỡng Da Hoa Anh Đào Innisfree Jeju Cherry Blossom Tone Up', soLuong: 1, donGia: 300000 }
+            ];
+            break;
+        case 'HD003':
+            products = [
+                { tenSanPham: 'Kem Chống Nắng Innisfree Intensive Long-Lasting Sunscreen', soLuong: 1, donGia: 400000 }
+            ];
+            break;
+        case 'HD004':
+            products = [
+                { tenSanPham: 'Kem Chống Nắng Innisfree da nhạy cảm Long-Lasting Sunscreen', soLuong: 1, donGia: 300000 },
+                { tenSanPham: 'Kem Dưỡng Innisfree Trà Xanh Green Tea Balancing Cream EX 50mL', soLuong: 2, donGia: 270000 }
+            ];
+            break;
+        case 'HD005':
+            products = [
+                { tenSanPham: 'Sữa Rửa Mặt Innisfree Jeju Pomegranate Foam', soLuong: 2, donGia: 240000 }
+            ];
+            break;
+        case 'HD006':
+            products = [
+                { tenSanPham: 'Tẩy Trang Innisfree Green Tea Cleansing Water', soLuong: 1, donGia: 280000 },
+                { tenSanPham: 'Kem Chống Nắng Innisfree Tone Up No Sebum SPF50+/PA++++', soLuong: 1, donGia: 300000 }
+            ];
+            break;
+        case 'HD007':
+            products = [
+                { tenSanPham: 'Nước tẩy trang Innisfree Sea Salt Cleansing Water', soLuong: 2, donGia: 350000 }
+            ];
+            break;
+        case 'HD008':
+            products = [
+                { tenSanPham: 'Kem Chống Nắng Innisfree Highlight No Sebum SPF50+/PA++++', soLuong: 1, donGia: 450000 },
+                { tenSanPham: 'Kem Chống Nắng Innisfree Intensive Long-Lasting Sunscreen', soLuong: 1, donGia: 400000 }
+            ];
+            break;
+        case 'HD009':
+            products = [
+                { tenSanPham: 'Kem Chống Nắng Innisfree da nhạy cảm Long-Lasting Sunscreen', soLuong: 2, donGia: 300000 }
+            ];
+            break;
+        case 'HD010':
+            products = [
+                { tenSanPham: 'Kem Dưỡng Da Hoa Anh Đào Innisfree Jeju Cherry Blossom Tone Up', soLuong: 1, donGia: 300000 },
+                { tenSanPham: 'Kem Dưỡng Innisfree Trà Xanh Green Tea Balancing Cream EX 50mL', soLuong: 2, donGia: 270000 }
+            ];
+            break;
+        case 'HD011':
+            products = [
+                { tenSanPham: 'Sữa rửa mặt Innisfree Green Tea Foam Cleanser', soLuong: 1, donGia: 210000 }
+            ];
+            break;
+        case 'HD012':
+            products = [
+                { tenSanPham: 'Sữa Rửa Mặt Innisfree Jeju Pomegranate Foam', soLuong: 1, donGia: 240000 }
+            ];
+            break;
+        case 'HD013':
+            products = [
+                { tenSanPham: 'Tẩy Trang Innisfree Green Tea Cleansing Water', soLuong: 1, donGia: 280000 },
+                { tenSanPham: 'Nước tẩy trang Innisfree Sea Salt Cleansing Water', soLuong: 1, donGia: 350000 }
+            ];
+            break;
+        default:
+            products = [];
+    }
+
+    console.log('Dữ liệu sản phẩm:', products);
+
+    const chiTietSanPham = document.getElementById('chiTietSanPham');
+    chiTietSanPham.innerHTML = '';
+    products.forEach(product => {
+        const row = `<tr>
+            <td>${product.tenSanPham}</td>
+            <td>${product.soLuong}</td>
+            <td>${product.donGia}</td>
+        </tr>`;
+        chiTietSanPham.innerHTML += row;
+    });
+
+    document.getElementById('hoaDonDetails').style.display = 'block';
+}
+        
+        function hideHoaDonDetails() {
+            document.getElementById('hoaDonDetails').style.display = 'none';
+        }
+        
+        function searchHoaDon() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#hoaDonTable tbody tr');
+        
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const match = Array.from(cells).some(cell => cell.innerText.toLowerCase().includes(input));
+                row.style.display = match ? '' : 'none';
+            });
+        }
+        
+        function printHoaDon() {
+    const detailSection = `
+        <div style="font-family: Arial, sans-serif; width: 80%; margin: auto; padding: 20px; border: 1px solid #ccc; background-color: #f9f9f9;">
+            <div style="text-align: center; margin-bottom: 10px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Innisfree-logo.svg/240px-Innisfree-logo.svg.png" style="width: 20%;">
+                <h2>HÓA ĐƠN</h2>
+            </div>
+            <div style="text-align: center; font-size: 14px;">
+                <p>Cửa hàng Innisfree</p>
+                <p>Lầu 4A, Toà nhà Vincom, 72 Lê Thánh Tôn, Phường Bến Nghé, Quận 1, Tp. Hồ Chí Minh, Việt Nam</p>
+                <p>Email: cs_vn@innisfree.com</p>
+            </div>
+            <div style="margin: 20px 0;">
+                <span><strong>Tên Khách Hàng:</strong> ${document.getElementById('detailHoTenKH').innerText}</span><br>
+                <span><strong>Địa Chỉ:</strong> ${document.getElementById('detailDiaChi').innerText}</span><br>
+                <span><strong>Số Điện Thoại:</strong> ${document.getElementById('detailSDT').innerText}</span>
+            </div>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Tên Sản Phẩm</th>
+                        <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2; text-align: center;">Số Lượng</th>
+                        <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Đơn Giá</th>
+                    </tr>
+                </thead>
+                <tbody id="chiTietSanPhamPrint">
+                    ${document.getElementById('chiTietSanPham').innerHTML}
+                </tbody>
+            </table>
+            <div style="margin-top: 20px; font-weight: bold; font-size: 16px;">
+                Tổng Tiền: ${document.getElementById('detailTongTien').innerText}
+            </div>
+            <div style="text-align: center; margin-top: 30px; font-size: 12px;">
+                <p>Cảm ơn bạn đã mua sắm tại Innisfree!</p>
+            </div>
+        </div>
+    `;
+
+    const printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>In Hóa Đơn</title>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(detailSection);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+}
+        
+function toggleTinhTrang(maHD) {
+    const tinhTrangElement = document.querySelector(`#${maHD} td:nth-child(7) .badge`);
+    const currentTinhTrang = tinhTrangElement.innerText;
+
+    // Chuyển đổi tình trạng
+    const newTinhTrang = currentTinhTrang === 'Chờ Thanh Toán' ? 'Đã Thanh Toán' : 'Chờ Thanh Toán';
+    
+    // Cập nhật giao diện
+    tinhTrangElement.innerText = newTinhTrang;
+    tinhTrangElement.className = `badge ${newTinhTrang === 'Chờ Thanh Toán' ? 'bg-warning' : 'bg-success'}`;
+
+    // Gửi yêu cầu cập nhật đến backend (nếu cần)
+    // Bạn có thể sử dụng fetch hoặc XMLHttpRequest để gửi yêu cầu cập nhật
+    // Ví dụ:
+    /*
+    fetch('/update-tinh-trang', {
+        method: 'POST',
+        body: JSON.stringify({ maHD: maHD, tinhTrang: newTinhTrang }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    */
+}
+        </script>
+        
+        
+</body>
+</html>

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Tài Khoản</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding-top: 50px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            color: white;
+        }
+        .buttons button:nth-child(1) {
+            background-color: #28a745;
+        }
+        .buttons button:nth-child(2) {
+            background-color: #ffc107;
+        }
+        .buttons button:nth-child(3) {
+            background-color: #dc3545;
+        }
+        .search-box {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-box input {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .search-box button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 4px;
+        }
+        .customer-list {
+            margin-top: 20px;
+        }
+        .customer-list table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .customer-list th, .customer-list td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            background-color: white;
+        }
+        .customer-list th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .confirmation-dialog {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            text-align: center;
+            width: 400px;
+            border-radius: 8px;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .dialog-buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .dialog-buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            color: black
+        }
+        .dialog-buttons .btn-danger {
+            background-color: #7f6df5;
+        }
+        .dialog-buttons .btn-primary {
+            background-color: #0a0aa4;
+        }
+    </style>
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    <script>
+        // Hiển thị form Thêm Tài Khoản
+        function showAddTaiKhoanForm() {
+            document.getElementById('addTaiKhoanForm').style.display = 'block';
+        }
+    
+        // Ẩn form Thêm Tài Khoản
+        function hideAddTaiKhoanForm() {
+            document.getElementById('addTaiKhoanForm').style.display = 'none';
+        }
+    
+        // Hiển thị form Cập Nhật Tài Khoản
+        function showEditTaiKhoanForm(taiKhoanId) {
+            document.getElementById('editTaiKhoanForm').style.display = 'block';
+            
+            // Lấy thông tin tài khoản từ bảng để điền vào form
+            var row = document.getElementById(taiKhoanId);
+            document.getElementById('editMaTK').value = row.cells[0].innerText;
+            document.getElementById('editTenDN').value = row.cells[1].innerText;
+            document.getElementById('editMatKhau').value = row.cells[2].innerText;
+            document.getElementById('editHoTen').value = row.cells[3].innerText;
+            document.getElementById('editEmail').value = row.cells[4].innerText;
+            document.getElementById('editPhanQuyen').value = row.cells[5].innerText;
+        }
+    
+        // Ẩn form Cập Nhật Tài Khoản
+        function hideEditTaiKhoanForm() {
+            document.getElementById('editTaiKhoanForm').style.display = 'none';
+        }
+    
+        // Xử lý sự kiện khi nhấn nút hủy trong form Cập Nhật
+        document.getElementById('cancelEditButton').addEventListener('click', function() {
+            hideEditTaiKhoanForm();
+        });
+    </script>
+</head>
+<body>
+
+   
+
+    <!-- Navbar start -->
+    <div class="container-fluid fixed-top">
+        <div class="container topbar bg-primary d-none d-lg-block">
+            <div class="d-flex justify-content-between">
+                <div class="top-info ps-2">
+                    <small class="me-3"><i class="fas fa-map-marker-alt me-2 text-secondary"></i> <a href="#" class="text-white">Lầu 4A, Toà nhà Vincom, 72 Lê Thánh Tôn, Phường Bến Nghé, Quận 1, Tp. Hồ Chí Minh, Việt Nam.</a></small>
+                    <small class="me-3"><i class="fas fa-envelope me-2 text-secondary"></i><a href="#" class="text-white">cs_vn@innisfree.com</a></small>
+                </div>
+            </div>
+        </div>
+   
+        <div class="container px-0">
+            <nav class="navbar navbar-light bg-white navbar-expand-xl">
+                <a href="index.html" class="navbar-brand">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Innisfree-logo.svg/240px-Innisfree-logo.svg.png" style="width: 40%;">
+                </a>
+                <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars text-primary"></span>
+                </button>
+                <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
+                    <div class="navbar-nav mx-auto">
+                        <a href="TrangChu.html" class="nav-item nav-link ">Trang chủ</a>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"> Quản lý thông tin </a>
+                            <div class="dropdown-menu m-0 bg-secondary rounded-0">
+                                <a  href="{{ url_for('customers') }}" class="dropdown-item active">Quản lý khách hàng</a>
+                                <a href="{{ url_for('employees') }}" class="dropdown-item">Quản lý nhân viên</a>
+                                <a href="{{ url_for('sanpham') }}"  class="dropdown-item">Quản lý sản phẩm </a>
+                                <a href="{{ url_for('products') }}" class="dropdown-item">Quản lý loại sản phẩm</a>
+                                <a href="{{ url_for('taikhoan') }}" class="dropdown-item">Quản lý tài khoản</a>
+                            </div>
+                        </div>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Bán hàng </a>
+                            <div class="dropdown-menu m-1 bg-secondary rounded-1">
+                                <a href="{{ url_for('hoadon') }}" class="dropdown-item active">Đơn đặt hàng</a>
+                                <a href="{{ url_for('warehouses') }}" class="dropdown-item">Kho</a>
+                                <a href="{{ url_for('phieunhap') }}" class="dropdown-item">Phiếu nhập</a>
+                                <a href="{{ url_for('phieuxuat') }}" class="dropdown-item">Phiếu Xuất</a>
+                            </div> 
+                        </div>
+                        <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Báo cáo - Thống kê</a>
+                        <div class="dropdown-menu m-2 bg-secondary rounded-2">
+                            <a href="{{ url_for('tonkho') }}" class="dropdown-item active">Doanh thu</a>
+                            <a href="{{ url_for('tk') }}" class="dropdown-item">Tồn kho</a>
+                        </div> 
+                        </div>
+                    </div>
+                  
+                </div>
+            </nav>
+        </div>
+    </div>
+    <!-- Navbar End -->
+    <h1>""</h1>
+    <h1>""</h1>
+    <div class="container mt-5">
+        <h1>Quản Lý Tài Khoản</h1>
+
+        <!-- Nút Thêm Tài Khoản -->
+        <button type="button" class="btn btn-primary mb-3" onclick="showAddTaiKhoanForm()">Thêm Tài Khoản</button>
+        
+        <!-- Form Thêm Tài Khoản -->
+        <div id="addTaiKhoanForm" style="display:none;">
+            <form method="POST" action="{{ url_for('add_taikhoan') }}">
+                <div class="form-group">
+                    <label for="maTK">Mã Tài Khoản:</label>
+                    <input type="text" class="form-control" id="maTK" name="MaTK" required>
+                </div>
+                <div class="form-group">
+                    <label for="tenDN">Tên Đăng Nhập:</label>
+                    <input type="text" class="form-control" id="tenDN" name="TenDN" required>
+                </div>
+                <div class="form-group">
+                    <label for="matKhau">Mật Khẩu:</label>
+                    <input type="password" class="form-control" id="matKhau" name="MatKhau" required>
+                </div>
+                <div class="form-group">
+                    <label for="hoTen">Họ Tên:</label>
+                    <input type="text" class="form-control" id="hoTen" name="HoTen" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" name="Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phanQuyen">Phân Quyền:</label>
+                    <select class="form-control" id="phanQuyen" name="PhanQuyen" required>
+                        <option value="Admin">Admin</option>
+                        <option value="Quản Lý">Quản Lý</option>
+                        <option value="NV Bán Hàng">NV Bán Hàng</option>
+                        <option value="NV Kho">NV Kho</option>
+                        <option value="Khách Hàng">Khách Hàng</option>
+                    </select>
+                </div>
+                <div class="buttons">
+                    <button type="submit" class="btn btn-success">Thêm</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideAddTaiKhoanForm()">Hủy</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Form Cập Nhật Tài Khoản -->
+        <div id="editTaiKhoanForm" style="display:none;">
+            <form method="POST" action="{{ url_for('update_taikhoan') }}">
+                <div class="form-group">
+                    <label for="editMaTK">Mã Tài Khoản:</label>
+                    <input type="text" class="form-control" id="editMaTK" name="MaTK" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="editTenDN">Tên Đăng Nhập:</label>
+                    <input type="text" class="form-control" id="editTenDN" name="TenDN" required>
+                </div>
+                <div class="form-group">
+                    <label for="editMatKhau">Mật Khẩu:</label>
+                    <input type="password" class="form-control" id="editMatKhau" name="MatKhau">
+                </div>
+                <div class="form-group">
+                    <label for="editHoTen">Họ Tên:</label>
+                    <input type="text" class="form-control" id="editHoTen" name="HoTen" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">Email:</label>
+                    <input type="email" class="form-control" id="editEmail" name="Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPhanQuyen">Phân Quyền:</label>
+                    <select class="form-control" id="editPhanQuyen" name="PhanQuyen" required>
+                        <option value="Admin">Admin</option>
+                        <option value="Quản Lý">Quản Lý</option>
+                        <option value="NV Bán Hàng">NV Bán Hàng</option>
+                        <option value="NV Kho">NV Kho</option>
+                        <option value="Khách Hàng">Khách Hàng</option>
+                    </select>
+                </div>
+                <div class="buttons">
+                    <button type="submit" class="btn btn-warning">Cập Nhật</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideEditTaiKhoanForm()">Hủy</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Danh Sách Tài Khoản -->
+        <h2 class="mt-5">Danh Sách Tài Khoản</h2>
+        <input type="text" class="form-control mb-3" id="searchInput" onkeyup="searchTaiKhoan()" placeholder="Tìm kiếm tài khoản...">
+        
+        <table id="taiKhoanTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Mã Tài Khoản</th>
+                    <th>Tên Đăng Nhập</th>
+                    <th>Họ Tên</th>
+                    <th>Email</th>
+                    <th>Phân Quyền</th>
+                    <th>Hành Động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tai_khoan in tai_khoan_list %}
+                <tr id="{{ tai_khoan.MaTK }}">
+                    <td>{{ tai_khoan.MaTK }}</td>
+                    <td>{{ tai_khoan.TenDN }}</td>
+                    <td>{{ tai_khoan.HoTen }}</td>
+                    <td>{{ tai_khoan.Email }}</td>
+                    <td>{{ tai_khoan.PhanQuyen }}</td>
+                    <td>
+                        <button class="btn btn-warning" onclick="showEditTaiKhoanForm('{{ tai_khoan.MaTK }}')">Sửa</button>
+                        <button class="btn btn-danger" onclick="showConfirmationDialog('{{ tai_khoan.MaTK }}')">Xóa</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <script>
+            function showAddTaiKhoanForm() {
+                document.getElementById('addTaiKhoanForm').style.display = 'block';
+            }
+        
+            function hideAddTaiKhoanForm() {
+                document.getElementById('addTaiKhoanForm').style.display = 'none';
+            }
+        
+            function showEditTaiKhoanForm(maTK) {
+    const row = document.getElementById(maTK);
+    document.getElementById('editMaTK').value = maTK;
+    document.getElementById('editTenDN').value = row.cells[1].innerText;
+    document.getElementById('editHoTen').value = row.cells[2].innerText;
+    document.getElementById('editEmail').value = row.cells[3].innerText;
+
+    const phanQuyen = row.cells[4].innerText; // Lấy tên phân quyền
+    const phanQuyenSelect = document.getElementById('editPhanQuyen');
+    phanQuyenSelect.value = phanQuyen; // Đặt giá trị cho dropdown
+    document.getElementById('editTaiKhoanForm').style.display = 'block';
+}
+            function hideEditTaiKhoanForm() {
+                document.getElementById('editTaiKhoanForm').style.display = 'none';
+            }
+        
+            function searchTaiKhoan() {
+                const input = document.getElementById('searchInput').value.toLowerCase();
+                const rows = document.querySelectorAll('#taiKhoanTable tbody tr');
+        
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    const match = Array.from(cells).some(cell => cell.innerText.toLowerCase().includes(input));
+                    row.style.display = match ? '' : 'none';
+                });
+            }
+        
+            function showConfirmationDialog(maTK) {
+        if (confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
+            // Gửi yêu cầu xóa đến server
+            fetch(`/delete_taikhoan/${maTK}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById(maTK).remove(); // Xóa hàng trong bảng
+                    } else {
+                        alert('Có lỗi xảy ra khi xóa tài khoản.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa tài khoản.');
+                });
+        }
+    }
+        </script>
+</body>
+</html>
