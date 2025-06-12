@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập</title>
+    <style>
+       body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+.login-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 300px;
+    position: relative; /* Để có thể căn chỉnh các phần tử con như biểu tượng mắt */
+}
+
+.login-container h1 {
+    margin-bottom: 20px;
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+    position: relative; /* Để có thể căn chỉnh biểu tượng con mắt bên trong */
+}
+
+.login-container .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%); /* Căn giữa dọc với input */
+    cursor: pointer;
+    font-size: 18px;
+    color: #888;
+}
+
+.login-container button {
+    width: 100%;
+    padding: 10px;
+    background: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.login-container button:hover {
+    background: #218838;
+}
+
+.login-container a {
+    display: block;
+    margin-top: 10px;
+    color: #28a745;
+    text-decoration: none;
+}
+
+.login-container a:hover {
+    text-decoration: underline;
+}
+
+.role-selection {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0;
+}
+
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Đăng nhập</h1>
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+            <label for="username">Tên đăng nhập</label>
+            <input type="text" id="username" placeholder="Tên đăng nhập" required>
+            
+            <label for="password">Mật khẩu</label>
+            <div style="position: relative;">
+                <input type="password" id="password" placeholder="Mật khẩu" required>
+                <span class="toggle-password" onclick="togglePassword()">👁️</span>
+            </div>
+
+            <div class="role-selection">
+                <label><input type="radio" name="role" value="Khách hàng" checked> Khách hàng</label>
+                <label><input type="radio" name="role" value="Nhân viên"> Nhân viên</label>
+            </div>
+            
+            <a href="TrangChu.html" id="loginLink" class="my-auto" style="display: none;">Đi đến trang chủ</a>
+            <button type="submit">Đăng nhập</button>
+        </form>
+        <a href="#">Quên mật khẩu</a>
+        <a href = "{{ url_for('dangky') }}">Tạo tài khoản</a>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('.toggle-password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.textContent = '👁️';
+            }
+        }
+        function handleLogin(event) {
+    event.preventDefault(); // Ngăn không reload trang
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const role = document.querySelector('input[name="role"]:checked').value;
+
+    // Tạo liên kết và điều hướng
+    const loginLink = document.getElementById("loginLink");
+
+    if (username === "hoanguyen03" && password === "123456" && role === "Khách hàng") {
+        loginLink.href = "{{ url_for('trangchu') }}"; // Trang khách hàng
+        loginLink.click();
+    } else if (username === "kieumy22" && password === "123456" && role === "Nhân viên") {
+        loginLink.href = "{{ url_for('GDNV') }}"; // Trang nhân viên
+        loginLink.click();
+    } else {
+        alert("Sai tên đăng nhập, mật khẩu hoặc vai trò!");
+    }
+}
+
+    </script>
+</body>
+</html>

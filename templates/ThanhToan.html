@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Cửa hàng Innisfree</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/4/45/Innisfree-logo.svg">
+
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    <style>
+    .custom-container {
+    padding-right: 10px; /* Thêm 10px lề phải */
+}
+
+                .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        
+    </style>
+    
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+     <!-- Spinner Start -->
+     <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" role="status"></div>
+    </div>
+    <!-- Spinner End -->
+
+
+    <!-- Navbar start -->
+    <div class="container-fluid fixed-top">
+        <div class="container topbar bg-primary d-none d-lg-block">
+            <div class="d-flex justify-content-between">
+                <div class="top-info ps-2">
+                    <small class="me-3"><i class="fas fa-map-marker-alt me-2 text-secondary"></i> <a href="#" class="text-white">Lầu 4A, Toà nhà Vincom, 72 Lê Thánh Tôn, Phường Bến Nghé, Quận 1, Tp. Hồ Chí Minh, Việt Nam.</a></small>
+                    <small class="me-3"><i class="fas fa-envelope me-2 text-secondary"></i><a href="#" class="text-white">cs_vn@innisfree.com</a></small>
+                </div>
+            </div>
+        </div>
+   
+        <div class="container px-0">
+            <nav class="navbar navbar-light bg-white navbar-expand-xl">
+                <a href="index.html" class="navbar-brand">
+                   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Innisfree-logo.svg/240px-Innisfree-logo.svg.png" style="width: 40%;"></img>
+                </a>
+                <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars text-primary"></span>
+                </button>
+                <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
+                    <div class="navbar-nav mx-auto">
+                        <a href="{{ url_for('GDKH') }}" class="nav-item nav-link active">Trang chủ</a>
+                        <a href="{{ url_for('DMSP') }}" class="nav-item nav-link">Sản phẩm</a>
+                        <a href="shop.html" class="nav-item nav-link">Giới thiệu</a>
+                        <a href="{{ url_for('LienHe') }}" class="nav-item nav-link">Liên hệ</a>
+                    </div>
+                    <div class="d-flex m-3 me-0">
+                        <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search text-primary"></i></button>
+                        <a href="{{ url_for('giohang') }}" class="position-relative me-4 my-auto">
+                            <i class="fa fa-shopping-bag fa-2x"></i>
+                            <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1" style="top: -5px; left: 15px; height: 20px; min-width: 20px;"></span>
+                            <div class="dropdown">
+                                <p>Xin chào Hoàng Uyên</p>
+                                <div class="dropdown-content">
+                                    <a href="/lich-su-giao-dich">Lịch sử giao dịch</a>
+                                    <a href="/" onclick="logout()">Đăng xuất</a>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+
+    <!-- Modal Search Start -->
+    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content rounded-0">
+                <div class="modal-header">
+                     
+                    <h5 class="modal-title" id="exampleModalLabel">Tìm kiếm sản phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex align-items-center">
+                    <div class="input-group w-75 mx-auto d-flex">
+                        <input type="search" class="form-control p-3" placeholder="Nhập sản phẩm cần tìm" aria-describedby="search-icon-1"> 
+                        <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i><span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+    <!-- Modal Search End -->
+
+
+        <!-- Single Page Header start -->
+        <div class="container-fluid page-header py-5">
+            <h1 class="text-center text-white display-6">Thanh toán</h1>
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="#">Đặt hàng</a></li>
+                <li class="breadcrumb-item active text-white">Thanh toán</li>
+            </ol>
+        </div>
+        <!-- Single Page Header End -->
+
+
+        <!-- Checkout Page Start -->
+        <div class="container-fluid py-5">
+            <div class="container py-5">
+                <h1 class="mb-4">Thông tin hoá đơn</h1>
+                <form action="#">
+                    <div class="row g-5">
+                        <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
+                            <div class="bg-light rounded">
+                                <div class="p-4">
+                                    <h1 class="display-6 mb-4">Thông tin thanh toán</h1>
+                                    <!-- Thông tin người nhận -->
+                                    <div class="mt-4">
+                                        <p class="mb-1">Hoàng Uyên</p>
+                                        <p class="mb-1">0928361839</p>
+                                        <p class="mb-1">hoanuyen03@gmail.com</p>
+                                        <p class="mb-1">385 đường 385, phường Tăng Nhơn Phú A, TP Thủ Đức, TP Hồ Chí Minh</p>
+                                    </div>
+            
+                                    <button class="btn btn-secondary mt-3" onclick="showInvoiceForm()">Đổi thông tin nhận</button>
+            
+                                    <!-- Phần thông tin hóa đơn ẩn -->
+                                    <div id="invoice-form" style="display: none; margin-top: 20px;">
+                                        <h1 class="mb-4">Thông tin hóa đơn</h1>
+                                        <form action="#">
+                                            <div class="row g-5">
+                                                <div class="col-md-12 col-lg-6 col-xl-7">
+                                                    <div class="row">
+                                                        <div class="col-md-12 col-lg-6">
+                                                            <div class="form-item w-100">
+                                                                <label class="form-label my-3">Họ<sup>*</sup></label>
+                                                                <input type="text" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12 col-lg-6">
+                                                            <div class="form-item w-100">
+                                                                <label class="form-label my-3">Tên<sup>*</sup></label>
+                                                                <input type="text" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-item">
+                                                        <label class="form-label my-3">Địa chỉ <sup>*</sup></label>
+                                                        <input type="text" class="form-control" placeholder="">
+                                                    </div>
+                                                    <div class="form-item">
+                                                        <label class="form-label my-3">Thành phố<sup>*</sup></label>
+                                                        <input type="text" class="form-control">
+                                                    </div>
+                                                    <div class="form-item">
+                                                        <label class="form-label my-3">Số điện thoại<sup>*</sup></label>
+                                                        <input type="tel" class="form-control">
+                                                    </div>
+                                                    <div class="form-item">
+                                                        <label class="form-label my-3">Địa chỉ email<sup>*</sup></label>
+                                                        <input type="email" class="form-control">
+                                                    </div>
+                                                    <hr>
+                                                    <div class="form-check my-3">
+                                                        <input class="form-check-input" type="checkbox" id="Address-1" name="Address" value="Address">
+                                                        <label class="form-check-label" for="Address-1">Giao đến địa chỉ khác?</label>
+                                                    </div>
+                                                    <div class="form-item">
+                                                        <textarea name="text" class="form-control" spellcheck="false" cols="30" rows="11" placeholder="Ghi chú (không bắt buộc)"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary mt-4">Lưu thông tin</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-6 col-xl-8" style="padding-right: 1px;">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Sản phẩm</th>
+                                            <th scope="col">Tên</th>
+                                            <th scope="col">Giá</th>
+                                            <th scope="col">Số lượng</th>
+                                            <th scope="col">Tổng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">
+                                                <div class="d-flex align-items-center mt-2">
+                                                    <img src="img/kcn.png" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="">
+                                                </div>
+                                            </th>
+                                            <td class="py-5">Kem Chống Nắng Innisfree Tone Up No Sebum Sunscreen SPF50+/PA++++</td>
+                                            <td class="py-5">600.000</td>
+                                            <td class="py-5">2</td>
+                                            <td class="py-5">600.000 VND</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"></th>
+                                            <td class="py-5"></td>
+                                            <td class="py-5">
+                                                <p class="mb-0 text-dark py-3">Thành tiền</p>
+                                            </td>
+                                            <td class="py-5">
+                                                <td class="py-5">
+                                                <div class="py-3 border-bottom border-top">
+                                                    <p class="mb-0 text-dark">600.000 VND</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"></th>
+                                            <td class="py-5">
+                                                <p class="mb-0 text-dark py-4">Vận chuyển</p>
+                                            </td>
+                                            <td colspan="3" class="py-5">
+                                                <div class="form-check text-start">
+                                                    <input type="checkbox" class="form-check-input bg-primary border-0" id="Shipping-1" name="Shipping-1" value="Shipping">
+                                                    <label class="form-check-label" for="Shipping-1">Miễn phí vận chuyển</label>
+                                                </div>
+                                                <div class="form-check text-start">
+                                                    <input type="checkbox" class="form-check-input bg-primary border-0" id="Shipping-2" name="Shipping-1" value="Shipping">
+                                                    <label class="form-check-label" for="Shipping-2">Vận chuyển tiết kiệm: 20.000 VND</label>
+                                                </div>
+                                                <div class="form-check text-start">
+                                                    <input type="checkbox" class="form-check-input bg-primary border-0" id="Shipping-3" name="Shipping-1" value="Shipping">
+                                                    <label class="form-check-label" for="Shipping-3">Vận chuyển hoả tốc: 100.000 VND</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row"></th>
+                                            <td class="py-5">
+                                                <p class="mb-0 text-dark text-uppercase py-3">Tổng tiền</p>
+                                            </td>
+                                            <td class="py-5"></td>
+                                            <td class="py-5"></td>
+                                            <td class="py-5">
+                                                <div class="py-3 border-bottom border-top">
+                                                    <p class="mb-0 text-dark">600.000 VND</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
+                                <div class="col-12">
+                                    <div class="form-check text-start my-3">
+                                        <input type="checkbox" class="form-check-input bg-primary border-0" id="Transfer-1" name="PaymentMethod" value="Transfer">
+                                        <label class="form-check-label" for="Transfer-1">Chuyển khoản ngân hàng</label>
+                                    </div>
+                                    <p class="text-start text-dark">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng ID đơn hàng của bạn làm tài liệu tham khảo thanh toán.</p>
+                                    <div id="qr-code-transfer" class="text-center" style="display: none;">
+                                        <img src="/img/QR.png" alt="QR Code for Bank Transfer" class="img-fluid" />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
+                                <div class="col-12">
+                                    <div class="form-check text-start my-3">
+                                        <input type="checkbox" class="form-check-input bg-primary border-0" id="Payments-1" name="PaymentMethod" value="Payments">
+                                        <label class="form-check-label" for="Payments-1">Ví điện tử</label>
+                                    </div>
+                                    <div id="qr-code-momo" class="text-center" style="display: none;">
+                                        <img src="/img/QR.png" alt="QR Code for MoMo Payment" class="img-fluid" />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
+                                <div class="col-12">
+                                    <div class="form-check text-start my-3">
+                                        <input type="checkbox" class="form-check-input bg-primary border-0" id="Delivery-1" name="PaymentMethod" value="Delivery">
+                                        <label class="form-check-label" for="Delivery-1">Thanh toán khi nhận hàng</label>
+                                    </div>
+                                    <div id="cod-info" class="text-center text-dark" style="display: none;">
+                                        <p>Quý khách sẽ thanh toán khi nhận hàng trực tiếp từ nhân viên giao hàng.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-4 text-center align-items-center justify-content-center pt-4">
+                                <button type="button" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary" id="order-button" onclick="redirectToSuccessPage()">Đặt hàng</button>
+                            </div>
+                    
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Checkout Page End -->
+
+        <script>
+           document.addEventListener("DOMContentLoaded", () => {
+    const transferCheckbox = document.getElementById("Transfer-1");
+    const paymentsCheckbox = document.getElementById("Payments-1");
+    const deliveryCheckbox = document.getElementById("Delivery-1");
+
+    const qrCodeTransfer = document.getElementById("qr-code-transfer");
+    const qrCodeMoMo = document.getElementById("qr-code-momo");
+    const codInfo = document.getElementById("cod-info");
+
+    const qrImageTransfer = qrCodeTransfer.querySelector("img");
+    const qrImageMoMo = qrCodeMoMo.querySelector("img");
+
+    // Danh sách checkbox để quản lý trạng thái
+    const checkboxes = [transferCheckbox, paymentsCheckbox, deliveryCheckbox];
+
+    // Reset trạng thái các checkbox khác
+    function resetOtherCheckboxes(selectedCheckbox) {
+        checkboxes.forEach((checkbox) => {
+            if (checkbox !== selectedCheckbox) {
+                checkbox.checked = false;
+            }
+        });
+    }
+
+    // Ẩn tất cả nội dung hiển thị
+    function resetDisplays() {
+        qrCodeTransfer.style.display = "none";
+        qrCodeMoMo.style.display = "none";
+        codInfo.style.display = "none";
+    }
+
+    // Lắng nghe sự kiện thay đổi trạng thái checkbox
+    checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+            resetDisplays();
+
+            if (checkbox.checked) {
+                resetOtherCheckboxes(checkbox);
+
+                // Hiển thị nội dung phù hợp với checkbox được chọn
+                if (checkbox === transferCheckbox) {
+                    qrImageTransfer.src = "/img/QR.png";
+                    qrCodeTransfer.style.display = "block";
+                } else if (checkbox === paymentsCheckbox) {
+                    qrImageMoMo.src = "/img/QR.png";
+                    qrCodeMoMo.style.display = "block";
+                } else if (checkbox === deliveryCheckbox) {
+                    codInfo.style.display = "block";
+                }
+            }
+        });
+    });
+});
+function redirectToSuccessPage() {
+        window.location.href = '/success' ;
+    }
+
+    function placeOrder() {
+            const orderDetails = {
+                productId: '#DH346',
+                quantity: 2,
+                customerEmail: 'hoanuyen03@gmail.com'
+            };
+
+            fetch('/submit-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderDetails)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Đặt hàng thành công!');
+                    window.location.href = 'ThanhCong.html';
+                }
+            })
+            .catch(error => console.error('Lỗi:', error));
+        }
+        </script>
+        <!-- Footer Start -->
+        <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5">
+            <div class="container py-5">
+                <div class="pb-4 mb-4" style="border-bottom: 1px solid rgba(226, 175, 24, 0.5) ;">
+                    <div class="row g-4">
+                        <div class="col-lg-3">
+                            <a href="#">
+                                <h1 class="text-primary mb-0">T1milk</h1>
+                                <p class="text-secondary mb-0">Sản phẩm nhà làm</p>
+                            </a>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="position-relative mx-auto">
+                                <input class="form-control border-0 w-100 py-3 px-4 rounded-pill" type="số" placeholder="Email của bạn">
+                                <button type="submit" class="btn btn-primary border-0 border-secondary py-3 px-4 position-absolute rounded-pill text-white" style="top: 0; right: 0;">Đăng ký</button>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="d-flex justify-content-end pt-3">
+                                
+                                <a class="btn btn-outline-secondary me-2 btn-md-square rounded-circle" href="https://www.facebook.com/profile.php?id=61556924182028"><i class="fab fa-facebook-f"></i></a>
+                                <a class="btn btn-outline-secondary me-2 btn-md-square rounded-circle" href=""><i class="fab fa-instagram"></i></a>
+                             
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-5">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="footer-item">
+                            <h4 class="text-light mb-3">Tại sao mọi người lại chọn T1milk</h4>
+                            <p class="mb-4">T1milk có thể được công nhận là có chất lượng cao, được sản xuất từ nguyên liệu tốt giúp đảm bảo sự an toàn và dinh dưỡng của sản phẩm, có giá cả phù hợp với đa số người tiêu dùng, đồng thời vẫn đảm bảo chất lượng.</p>
+                            <a href="" class="btn border-secondary py-2 px-4 rounded-pill text-primary">Xem thêm</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="d-flex flex-column text-start footer-item">
+                            <h4 class="text-light mb-3"> Thông tin cửa hàng</h4>
+                            <a class="btn-link" href=""> Về T1milk</a>
+                            <a class="btn-link" href="">Thông tin liên lạc</a>
+                            <a class="btn-link" href="">Chính sách bảo mật</a>
+                            <a class="btn-link" href="">Điều khoản</a>
+                            <a class="btn-link" href="">Chính sách hoàn trả</a>
+                            <a class="btn-link" href="/faq.html">Câu hỏi thường gặp</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="d-flex flex-column text-start footer-item">
+                            <h4 class="text-light mb-3">Tài khoản</h4>
+                            <a class="btn-link" href=""> Tài khoản của tôi </a>
+                            <a class="btn-link" href=""> Chi tiết sản phẩm</a>
+                            <a class="btn-link" href="">Giỏ hàng</a>
+                            <a class="btn-link" href="">Lịch sử đặt hàng</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="footer-item">
+                            <h4 class="text-light mb-3">Liên hệ</h4>
+                            <p>Địa chỉ: 29 Đường số 5, phường Tăng Nhơn Phú B, Thành phố Thủ Đức</p>
+                            <p>Email: T1milk@gmail.com</p>
+                            <p>Phone: 0366553986</p>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer End -->
+
+        <!-- Copyright Start -->
+        <div class="container-fluid copyright bg-dark py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        <span class="text-light"><a href="#"><i class="fas fa-copyright text-light me-2"></i>Your Site Name</a>, All right reserved.</span>
+                    </div>
+                    <div class="col-md-6 my-auto text-center text-md-end text-white">
+                        <!--/*** This template is free as long as you keep the below author’s credit link/attribution link/backlink. ***/-->
+                        <!--/*** If you'd like to use the template without the below author’s credit link/attribution link/backlink, ***/-->
+                        <!--/*** you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". ***/-->
+                        <!-- Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a> Distributed By <a class="border-bottom" href="https://themewagon.com">ThemeWagon</a>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Copyright End -->
+
+
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>   
+
+        
+    <!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    </body>
+
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Nhân Viên</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding-top: 50px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            color: white;
+        }
+        .buttons button:nth-child(1) {
+            background-color: #28a745;
+        }
+        .buttons button:nth-child(2) {
+            background-color: #ffc107;
+        }
+        .buttons button:nth-child(3) {
+            background-color: #dc3545;
+        }
+        .search-box {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-box input {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .search-box button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 4px;
+        }
+        .customer-list {
+            margin-top: 20px;
+        }
+        .customer-list table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .customer-list th, .customer-list td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            background-color: white;
+        }
+        .customer-list th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .confirmation-dialog {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            text-align: center;
+            width: 400px;
+            border-radius: 8px;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .dialog-buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .dialog-buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            color: black
+        }
+        .dialog-buttons .btn-danger {
+            background-color: #7f6df5;
+        }
+        .dialog-buttons .btn-primary {
+            background-color: #0a0aa4;
+        }
+    </style>
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    <script>
+        // Hiển thị form Thêm Nhân Viên
+        function showAddEmployeeForm() {
+            document.getElementById('addEmployeeForm').style.display = 'block';
+        }
+    
+        // Ẩn form Thêm Nhân Viên
+        function hideAddEmployeeForm() {
+            document.getElementById('addEmployeeForm').style.display = 'none';
+        }
+    
+        // Hiển thị form Cập Nhật Nhân Viên
+        function showEditEmployeeForm(employeeId) {
+            document.getElementById('editEmployeeForm').style.display = 'block';
+            // Lấy thông tin nhân viên từ bảng để điền vào form
+            var row = document.getElementById(employeeId);
+            document.getElementById('editMaNV').value = row.cells[0].innerText;
+            document.getElementById('editHoTenNV').value = row.cells[1].innerText;
+            document.getElementById('editNgaySinhNV').value = row.cells[2].innerText;
+            document.getElementById('editGioiTinhNV').value = row.cells[3].innerText;
+            document.getElementById('editSDT_NV').value = row.cells[4].innerText;
+            document.getElementById('editEmail_NV').value = row.cells[5].innerText;
+        }
+    
+        // Ẩn form Cập Nhật Nhân Viên
+        function hideEditEmployeeForm() {
+            document.getElementById('editEmployeeForm').style.display = 'none';
+        }
+    </script>
+</head>
+<body>
+
+   
+
+    <!-- Navbar start -->
+    <div class="container-fluid fixed-top">
+        <div class="container topbar bg-primary d-none d-lg-block">
+            <div class="d-flex justify-content-between">
+                <div class="top-info ps-2">
+                    <small class="me-3"><i class="fas fa-map-marker-alt me-2 text-secondary"></i> <a href="#" class="text-white">Lầu 4A, Toà nhà Vincom, 72 Lê Thánh Tôn, Phường Bến Nghé, Quận 1, Tp. Hồ Chí Minh, Việt Nam.</a></small>
+                    <small class="me-3"><i class="fas fa-envelope me-2 text-secondary"></i><a href="#" class="text-white">cs_vn@innisfree.com</a></small>
+                </div>
+            </div>
+        </div>
+   
+        <div class="container px-0">
+            <nav class="navbar navbar-light bg-white navbar-expand-xl">
+                <a href="index.html" class="navbar-brand">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Innisfree-logo.svg/240px-Innisfree-logo.svg.png" style="width: 40%;">
+                </a>
+                <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars text-primary"></span>
+                </button>
+                <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
+                    <div class="navbar-nav mx-auto">
+                        <a href="TrangChu.html" class="nav-item nav-link ">Trang chủ</a>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"> Quản lý thông tin </a>
+                            <div class="dropdown-menu m-0 bg-secondary rounded-0">
+                                <a  href="{{ url_for('customers') }}" class="dropdown-item active">Quản lý khách hàng</a>
+                                <a href="{{ url_for('employees') }}" class="dropdown-item">Quản lý nhân viên</a>
+                                <a href="{{ url_for('sanpham') }}"  class="dropdown-item">Quản lý sản phẩm </a>
+                                <a href="{{ url_for('products') }}" class="dropdown-item">Quản lý loại sản phẩm</a>
+                                <a href="{{ url_for('taikhoan') }}" class="dropdown-item">Quản lý tài khoản</a>
+                            </div>
+                        </div>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Bán hàng </a>
+                            <div class="dropdown-menu m-1 bg-secondary rounded-1">
+                                <a href="{{ url_for('hoadon') }}" class="dropdown-item active">Đơn đặt hàng</a>
+                                <a href="{{ url_for('warehouses') }}" class="dropdown-item">Kho</a>
+                                <a href="{{ url_for('phieunhap') }}" class="dropdown-item">Phiếu nhập</a>
+                                <a href="{{ url_for('phieuxuat') }}" class="dropdown-item">Phiếu Xuất</a>
+                            </div> 
+                        </div>
+                        <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Báo cáo - Thống kê</a>
+                        <div class="dropdown-menu m-2 bg-secondary rounded-2">
+                            <a href="{{ url_for('tonkho') }}" class="dropdown-item active">Doanh thu</a>
+                            <a href="{{ url_for('tk') }}" class="dropdown-item">Tồn kho</a>
+                        </div> 
+                        </div>
+                    </div>
+                  
+                </div>
+            </nav>
+        </div>
+    </div>
+    <!-- Navbar End -->
+    <h1>""</h1>
+    <h1>""</h1>
+    <div class="container mt-5">
+            <h1>Quản Lý Nhân Viên</h1>
+            
+            <!-- Nút Thêm Nhân Viên -->
+            <button type="button" class="btn btn-primary mb-3" onclick="showAddEmployeeForm()">Thêm Nhân Viên</button>
+        
+            <!-- Form Thêm Nhân Viên -->
+            <div id="addEmployeeForm" style="display:none;">
+                <form method="POST" action="{{ url_for('add_employee') }}">
+                    <div class="form-group">
+                        <label for="maNV">Mã Nhân Viên:</label>
+                        <input type="text" class="form-control" id="maNV" name="MaNV" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="hoTenNV">Họ Tên:</label>
+                        <input type="text" class="form-control" id="hoTenNV" name="HoTenNV" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ngaySinhNV">Ngày Sinh:</label>
+                        <input type="date" class="form-control" id="ngaySinhNV" name="NgaySinhNV" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gioiTinhNV">Giới Tính:</label>
+                        <select class="form-control" id="gioiTinhNV" name="GioiTinhNV" required>
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sdtNV">SĐT:</label>
+                        <input type="text" class="form-control" id="sdtNV" name="SDT_NV" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailNV">Email:</label>
+                        <input type="email" class="form-control" id="emailNV" name="Email_NV" required>
+                    </div>
+                    <div class="buttons">
+                        <button type="submit" class="btn btn-success">Thêm</button>
+                        <button type="button" class="btn btn-secondary" onclick="hideAddEmployeeForm()">Hủy</button>
+                    </div>
+                </form>
+            </div>
+          <!-- Form Cập Nhật Nhân Viên -->
+          <div id="editEmployeeForm" style="display:none;">
+            <form method="POST" action="{{ url_for('update_employee') }}">
+                <div class="form-group">
+                    <label for="editMaNV">Mã Nhân Viên:</label>
+                    <input type="text" class="form-control" id="editMaNV" name="MaNV" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="editHoTenNV">Họ Tên:</label>
+                    <input type="text" class="form-control" id="editHoTenNV" name="HoTenNV" required>
+                </div>
+                <div class="form-group">
+                    <label for="editNgaySinhNV">Ngày Sinh:</label>
+                    <input type="date" class="form-control" id="editNgaySinhNV" name="NgaySinhNV" required>
+                </div>
+                <div class="form-group">
+                    <label for="editGioiTinhNV">Giới Tính:</label>
+                    <select class="form-control" id="editGioiTinhNV" name="GioiTinhNV" required>
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editSDT_NV">SĐT:</label>
+                    <input type="text" class="form-control" id="editSDT_NV" name="SDT_NV" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEmail_NV">Email:</label>
+                    <input type="email" class="form-control" id="editEmail_NV" name="Email_NV" required>
+                </div>
+                <div class="buttons">
+                    <button type="submit" class="btn btn-warning">Cập Nhật</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideEditEmployeeForm()">Hủy</button>
+                </div>
+            </form>
+        </div>
+    
+        <!-- Xác Nhận Xóa Nhân Viên -->
+        <div class="confirmation-dialog" id="confirmationDialog" style="display:none;">
+            <p>Bạn có chắc chắn muốn xóa nhân viên này?</p>
+            <div class="dialog-buttons">
+                <button class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
+                <button onclick="closeConfirmationDialog()">Hủy</button>
+            </div>
+        </div>
+            <!-- Tìm Kiếm Nhân Viên -->
+            <h2 class="mt-5">Danh Sách Nhân Viên</h2>
+            <input type="text" class="form-control mb-3" id="searchInput" onkeyup="searchEmployee()" placeholder="Tìm kiếm nhân viên...">
+            
+            <!-- Danh Sách Nhân Viên -->
+            <table id="employeeTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Mã Nhân Viên</th>
+                        <th>Họ Tên</th>
+                        <th>Ngày Sinh</th>
+                        <th>Giới Tính</th>
+                        <th>SĐT</th>
+                        <th>Email</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in employees %}
+                    <tr id="{{ employee['MaNV'] }}">
+                        <td>{{ employee['MaNV'] }}</td>
+                        <td>{{ employee['HoTenNV'] }}</td>
+                        <td>{{ employee['NgaySinhNV'] }}</td>
+                        <td>{{ employee['GioiTinhNV'] }}</td>
+                        <td>{{ employee['SDT_NV'] }}</td>
+                        <td>{{ employee['Email_NV'] }}</td>
+                        <td>
+                            <button class="btn btn-warning" onclick="showEditEmployeeForm('{{ employee.MaNV }}')">Sửa</button>
+                            <button class="btn btn-danger" onclick="showConfirmationDialog('{{ employee.MaNV }}')">Xóa</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        
+          
+        
+            <script>
+                function showAddEmployeeForm() {
+                    document.getElementById('addEmployeeForm').style.display = 'block';
+                }
+        
+                function hideAddEmployeeForm() {
+                    document.getElementById('addEmployeeForm').style.display = 'none';
+                }
+        
+                function showEditEmployeeForm(maNV) {
+                    // Thay đổi giá trị các trường trong form
+                    var row = document.getElementById(maNV);
+                    document.getElementById('editMaNV').value = row.cells[0].innerText;
+                    document.getElementById('editHoTenNV').value = row.cells[1].innerText;
+                    document.getElementById('editNgaySinhNV').value = row.cells[2].innerText;
+                    document.getElementById('editGioiTinhNV').value = row.cells[3].innerText;
+                    document.getElementById('editSDT_NV').value = row.cells[4].innerText;
+                    document.getElementById('editEmail_NV').value = row.cells[5].innerText;
+                    document.getElementById('editEmployeeForm').style.display = 'block';
+                }
+        
+                function hideEditEmployeeForm() {
+                    document.getElementById('editEmployeeForm').style.display = 'none';
+                }
+        
+                function showConfirmationDialog(maNV) {
+                    document.getElementById('confirmationDialog').style.display = 'block';
+                    document.getElementById('confirmDeleteBtn').onclick = function() {
+                        deleteEmployee(maNV);
+                    };
+                }
+        
+                function closeConfirmationDialog() {
+                    document.getElementById('confirmationDialog').style.display = 'none';
+                }
+        
+                function deleteEmployee(maNV) {
+                    // Gọi API hoặc thực hiện logic xóa nhân viên ở đây
+                    // Sau khi xóa, ẩn dialog và xóa hàng trong bảng
+                    closeConfirmationDialog();
+                    document.getElementById(maNV).remove();
+                    alert("Đã xóa nhân viên thành công!");
+                }
+        
+                function searchEmployee() {
+                    var input, filter, table, tr, td, i, j, txtValue;
+                    input = document.getElementById("searchInput");
+                    filter = input.value.toUpperCase();
+                    table = document.getElementById("employeeTable");
+                    tr = table.getElementsByTagName("tr");
+        
+                    for (i = 1; i < tr.length; i++) {
+                        tr[i].style.display = "none";
+                        td = tr[i].getElementsByTagName("td");
+                        for (j = 0; j < td.length; j++) {
+                            if (td[j]) {
+                                txtValue = td[j].textContent || td[j].innerText;
+                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                    tr[i].style.display = "";
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            </script>
+        </body>
+</html>

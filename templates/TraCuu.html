@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra Cứu Tình Trạng Đơn Hàng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding-top: 50px;
+        }
+        .search-box {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-box input {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .search-box button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .order-status {
+            display: none;
+            margin-top: 20px;
+        }
+        .order-status table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .order-status th, .order-status td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .order-status th {
+            background-color: #f2f2f2;
+        }
+        .no-result {
+            display: none;
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tra Cứu Tình Trạng Đơn Hàng</h1>
+        <div class="search-box">
+            <input type="text" id="phoneInput" placeholder="Nhập số điện thoại...">
+            <button onclick="searchOrder()">Tìm Kiếm</button>
+        </div>
+        <div class="order-status" id="orderStatus">
+            <h2>Tình Trạng Đơn Hàng</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã Đơn Hàng</th>
+                        <th>Ngày Đặt Hàng</th>
+                        <th>Tình Trạng</th>
+                        <th>Chi Tiết</th>
+                    </tr>
+                </thead>
+                <tbody id="orderBody"></tbody>
+            </table>
+        </div>
+        <div class="no-result" id="noResult">
+            Không tìm thấy đơn hàng nào với số điện thoại này.
+        </div>
+    </div>
+
+    <script>
+        const orders = [
+            { MaDH: 'DH001', NgayDatHang: '2023-07-01', TinhTrang: 'Đang giao hàng', SDT: '0123456789' },
+            { MaDH: 'DH002', NgayDatHang: '2023-07-02', TinhTrang: 'Đã giao hàng', SDT: '0987654321' },
+            { MaDH: 'DH003', NgayDatHang: '2023-07-03', TinhTrang: 'Đang xử lý', SDT: '0123456789' },
+            // Thêm các đơn hàng mẫu khác ở đây
+        ];
+
+        function searchOrder() {
+            const phoneInput = document.getElementById('phoneInput').value;
+            const filteredOrders = orders.filter(order => order.SDT === phoneInput);
+            const orderBody = document.getElementById('orderBody');
+            const orderStatus = document.getElementById('orderStatus');
+            const noResult = document.getElementById('noResult');
+
+            orderBody.innerHTML = '';
+
+            if (filteredOrders.length > 0) {
+                filteredOrders.forEach(order => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${order.MaDH}</td>
+                        <td>${order.NgayDatHang}</td>
+                        <td>${order.TinhTrang}</td>
+                        <td><button onclick="viewDetails('${order.MaDH}')">Xem</button></td>
+                    `;
+                    orderBody.appendChild(row);
+                });
+                orderStatus.style.display = 'block';
+                noResult.style.display = 'none';
+            } else {
+                orderStatus.style.display = 'none';
+                noResult.style.display = 'block';
+            }
+        }
+
+        function viewDetails(orderId) {
+            alert('Chi tiết đơn hàng ' + orderId);
+        }
+    </script>
+</body>
+</html>

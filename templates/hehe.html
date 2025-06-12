@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Hàng</title>
+    <script>
+        function placeOrder() {
+            const orderDetails = {
+                productId: '12345',
+                quantity: 2,
+                customerEmail: 'customer@example.com'
+            };
+
+            fetch('/submit-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderDetails)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Đặt hàng thành công!');
+                    window.location.href = 'ThanhCong.html';
+                }
+            })
+            .catch(error => console.error('Lỗi:', error));
+        }
+    </script>
+</head>
+<body>
+    <button onclick="placeOrder()">Đặt hàng</button>
+</body>
+</html>

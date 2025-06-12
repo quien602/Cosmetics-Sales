@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Sản Phẩm</title>
+</head>
+<body>
+    <h1>Thêm Sản Phẩm</h1>
+    <form method="POST" action="{{ url_for('add_sanpham') }}" enctype="multipart/form-data">
+        <label for="MaSP">Mã Sản Phẩm:</label>
+        <input type="text" name="MaSP" required><br>
+
+        <label for="TenSP">Tên Sản Phẩm:</label>
+        <input type="text" name="TenSP" required><br>
+
+        <label for="GiaBan">Giá Bán:</label>
+        <input type="number" name="GiaBan" required><br>
+
+        <label for="SoLuong">Số Lượng:</label>
+        <input type="number" name="SoLuong" required><br>
+
+        <label for="HinhAnh">Hình Ảnh:</label>
+        <input type="file" name="HinhAnh" required><br>
+
+        <label for="MaLoaiSP">Mã Loại Sản Phẩm:</label>
+        <input type="text" name="MaLoaiSP" required><br>
+
+        <label for="MaKho">Mã Kho:</label>
+        <input type="text" name="MaKho" required><br>
+
+        <button type="submit">Thêm Sản Phẩm</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký tài khoản</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .register-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+        .register-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .form-group input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        .toggle-password {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .toggle-password input {
+            flex: 1;
+        }
+        .toggle-password span {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            color: #888;
+        }
+        .requirements {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .terms {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .terms input {
+            margin-right: 10px;
+        }
+        .register-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .register-btn:hover {
+            background-color: #45a049;
+        }
+        .extra-links {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .extra-links a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .extra-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2>Đăng ký tài khoản</h2>
+        <div class="extra-links">
+            Bạn đã có tài khoản? <a href="#">Đăng nhập</a>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Nhập email">
+        </div>
+        <div class="form-group">
+            <label for="username">Tên đăng nhập</label>
+            <input type="text" id="username" placeholder="Nhập tên đăng nhập">
+        </div>
+        <div class="form-group toggle-password">
+            <label for="password">Mật khẩu</label>
+            <input type="password" id="password" placeholder="Nhập mật khẩu">
+            <span onclick="togglePassword()">👁️</span>
+        </div>
+        <div class="requirements">
+            <span>• Hơn 6 ký tự</span>
+            <span>• Chưa ký tự đặc biệt</span>
+            <span>• Có chứa chữ viết hoa</span>
+        </div>
+        <div class="terms">
+            <input type="checkbox" id="terms">
+            <label for="terms">Bắt đầu sử dụng dịch vụ của chúng tôi bằng cách tạo tài khoản mới</label>
+        </div>
+        <button class="register-btn">Đăng ký ngay</button>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordToggle = document.querySelector('.toggle-password span');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordToggle.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                passwordToggle.textContent = '👁️';
+            }
+        }
+    </script>
+</body>
+</html>
